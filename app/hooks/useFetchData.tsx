@@ -1,10 +1,11 @@
+import { config } from '@/constants/config';
 import { useQuery } from '@tanstack/react-query';
 
 const fetchData = async (
   url: string, 
   method: string, 
   token?: string,
-  payload?: any
+  payload?: any,
 ) => {
   try {
     const headers: Record<string, string> = {
@@ -15,12 +16,13 @@ const fetchData = async (
     }
   
     const options: RequestInit = {
+      credentials: 'include',
       method, // HTTP method (GET, POST, PUT, DELETE, etc.)
       headers,
     };
     if(method) options['method'] = method.toUpperCase();
     if(payload) options['body'] = JSON.stringify(payload);
-    const response = await fetch(url, options);
+    const response = await fetch(`${config.apiUrl}${url}`, options);
 
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -29,12 +31,14 @@ const fetchData = async (
     const responsePayload = await response.json();
     const message = responsePayload['message'];
     const errors = responsePayload['errors'];
+    const data = responsePayload['data'];
   
     console.log('message', message, errors);
     
     return {
       message: message,
-      errors: errors
+      errors: errors,
+      data: data
     }
   } catch (error) {
     return {

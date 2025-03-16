@@ -5,6 +5,7 @@ import { Link, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '@/constants/Colors';
 import { POST } from '@/app/hooks/useFetchData';
+import { saveToken } from '@/app/utils/secureStore';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -15,8 +16,9 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
+      setIsLoading(true)
       const res = await POST(
-        'http://localhost:3999/api/user/sign-in', 
+        '/user/sign-in', 
         '', // Token (if applicable)
         {
           email: 'finn@gmail.com',
@@ -28,10 +30,16 @@ export default function LoginScreen() {
       if (res.errors) {
         console.error('Sign-in failed:', res.errors);
       } else {
+        if (res.data.token) {
+          await saveToken(res.data.token);
+        }
         console.log('Sign-in successful:', res.message);
+        router.replace('/home');
       }
     } catch (error) {
       console.error('Error in handleSignIn:', error);
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -94,7 +102,7 @@ export default function LoginScreen() {
 
           <View style={styles.signupContainer}>
             <Text style={styles.signupText}>Don't have an account? </Text>
-            <Link href="/register">
+            <Link href="/register" disabled={isLoading}>
               <Text style={styles.signupLink}>Sign Up</Text>
             </Link>
           </View>
