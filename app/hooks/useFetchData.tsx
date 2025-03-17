@@ -24,20 +24,20 @@ const fetchData = async (
     if(payload) options['body'] = JSON.stringify(payload);
     const response = await fetch(`${config.apiUrl}${url}`, options);
 
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
+    // if (!response.ok) {
+    //   throw new Error('Network response was not ok');
+    // }
     // const body = utf8.decode(res.bodyBytes);
     const responsePayload = await response.json();
-    const message = responsePayload['message'];
-    const errors = responsePayload['errors'];
+    console.log('responsePayload', responsePayload);
+    
+    const message = responsePayload['message'];;
     const data = responsePayload['data'];
-  
-    console.log('message', message, errors);
+    const status = responsePayload['status'];
     
     return {
       message: message,
-      errors: errors,
+      status: status,
       data: data
     }
   } catch (error) {

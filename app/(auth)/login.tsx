@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '@/constants/Colors';
 import { POST } from '@/app/hooks/useFetchData';
 import { saveToken } from '@/app/utils/secureStore';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -13,31 +14,27 @@ export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
+  const {onLogin} = useAuth();
 
   const handleLogin = async () => {
     try {
-      setIsLoading(true)
-      const res = await POST(
-        '/user/sign-in', 
-        '', // Token (if applicable)
-        {
-          email: 'finn@gmail.com',
-          password: '123456789',
-        }
-      );
+      setIsLoading(true);
+      const res = await onLogin!(email, password);
   
       console.log('Response:', res);
-      if (res.errors) {
-        console.error('Sign-in failed:', res.errors);
-      } else {
-        if (res.data.token) {
-          await saveToken(res.data.token);
+      if(res.status) {
+        if (res.data.access_token) {
+          await saveToken(res.data.access_token);
+          console.log('Sign-in successful:', res.message);
+          router.replace('/');
+          setEmail('')
+          setPassword('')
         }
-        console.log('Sign-in successful:', res.message);
-        router.replace('/home');
+      } else {
+        alert(res.message)
       }
     } catch (error) {
-      console.error('Error in handleSignIn:', error);
+      alert(error)
     } finally {
       setIsLoading(false)
     }
