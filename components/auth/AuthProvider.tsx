@@ -5,7 +5,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 interface AuthProps {
   authState?: {token: string | null, authenticated: boolean | null},
   loading?: boolean | null,
-  onRegister?: (email: string, password: string) => Promise<any>;
+  onRegister?: ({name, email, password, confirmPassword}: 
+    {name: string, email: string, password: string, confirmPassword: string}) => Promise<any>;
   onLogin?: (email: string, password: string) => Promise<any>;
   onLogut?: () => Promise<any>
 }
@@ -60,16 +61,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  const register = async () => {
+  const register = async ({name, email, password, confirmPassword}: 
+    {name: string, email: string, password: string, confirmPassword: string}) => {
     try {
       const res = await POST(
         '/user/sign-up', 
         '',
         {
-          "name": "nhi2",
-          "email": "nhi2@gmail.com",
-          "password": "12345678",
-          "confirmPassword": "12345678",
+          "name": name,
+          "email": email,
+          "password": password,
+          "confirmPassword": confirmPassword,
           "phone": "234343434"
         }
       );

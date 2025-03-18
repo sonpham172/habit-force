@@ -55,10 +55,14 @@ function RootLayoutNav() {
   
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{
-        headerShown: false
-      }}>
+      <Stack>
         <Stack.Screen name="index" />
+        <Stack.Screen name="(auth)/login" options={{
+          title: "Login"
+        }} />
+        <Stack.Screen name="(auth)/register" options={{
+          title: "Register"
+        }} />
       </Stack>
     </ThemeProvider>
   );

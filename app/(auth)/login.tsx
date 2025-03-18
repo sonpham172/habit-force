@@ -20,8 +20,6 @@ export default function LoginScreen() {
     try {
       setIsLoading(true);
       const res = await onLogin!(email, password);
-  
-      console.log('Response:', res);
       if(res.status) {
         if (res.data.access_token) {
           await saveToken(res.data.access_token);
@@ -41,7 +39,6 @@ export default function LoginScreen() {
   }
 
   return (
-    <SafeAreaView style={{flex: 1}}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -51,7 +48,7 @@ export default function LoginScreen() {
           <View style={styles.logoPlaceholder}>
             <Text style={styles.logoText}>LOGO</Text>
           </View>
-          <Text style={styles.title}>Welcome Back</Text>
+          <Text style={styles.title}>Habit Force</Text>
         </View>
 
         <View style={styles.formContainer}>
@@ -76,6 +73,7 @@ export default function LoginScreen() {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            textContentType="oneTimeCode"
           />
 
           <Pressable
@@ -105,7 +103,6 @@ export default function LoginScreen() {
           </View>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
   );
 }
 
@@ -113,6 +110,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.light.background,
+    paddingVertical: 40
   },
   logoContainer: {
     alignItems: 'center',

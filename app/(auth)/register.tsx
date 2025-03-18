@@ -1,88 +1,115 @@
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput } from 'react-native';
+import { ActivityIndicator, Button, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useState } from 'react';
 import { Link, useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '@/constants/Colors';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 export default function RegisterScreen() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const router = useRouter();
+  const {onRegister} = useAuth()
+  const router = useRouter()
 
-  const handleRegister = async () => { }
+  const handleRegister = async () => {
+    try {
+      setIsLoading(true);
+      const payload = {
+        email, password, confirmPassword, name
+      };
+      const res = await onRegister!(payload);
+      if(res.status) {
+          console.log('Register successful:', res.message);
+          router.replace('/login');
+          setEmail('')
+          setPassword('')
+          setName('')
+          setConfirmPassword('')
+          alert('Register successful. You can login now')
+        } else {
+        alert(res.message)
+      }
+    } catch (error) {
+      alert(error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
-      >
-        <View style={styles.logoContainer}>
-          {/* Replace with your actual logo */}
-          <View style={styles.logoPlaceholder}>
-            <Text style={styles.logoText}>LOGO</Text>
-          </View>
-          <Text style={styles.title}>Welcome Back</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
+      <View style={styles.logoContainer}>
+        {/* Replace with your actual logo */}
+        <View style={styles.logoPlaceholder}>
+          <Text style={styles.logoText}>LOGO</Text>
         </View>
+        <Text style={styles.title}>Welcome Back</Text>
+      </View>
 
-        <View style={styles.formContainer}>
-          {errorMessage ? (
-            <Text style={styles.errorText}>{errorMessage}</Text>
-          ) : null}
+      <View style={styles.formContainer}>
+        <Text style={styles.label}>Name</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your name"
+          value={name}
+          onChangeText={setName}
+          autoCapitalize="none"
+        />
 
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
 
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          textContentType="oneTimeCode"
+        />
 
-          <Text style={styles.label}>Confirm Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your password"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry
-          />
+        <Text style={styles.label}>Confirm Password</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your password"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+          textContentType="oneTimeCode"
+        />
 
-          <Pressable
-            style={styles.loginButton}
-            onPress={handleRegister}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator color={Colors.light.background} />
-            ) : (
-              <Text style={styles.loginButtonText}>Login</Text>
-            )}
-          </Pressable>
+        <Pressable
+          style={styles.loginButton}
+          onPress={handleRegister}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color={Colors.light.background} />
+          ) : (
+            <Text style={styles.loginButtonText}>Register</Text>
+          )}
+        </Pressable>
 
-          <View style={styles.signupContainer}>
-            <Text style={styles.signupText}>Already had account? </Text>
-            <Link replace href={"/login"}>
-              <Text style={styles.signupLink}>Sign In</Text>
-            </Link>
-          </View>
+        <View style={styles.signupContainer}>
+          <Text style={styles.signupText}>Already had account? </Text>
+          <Text onPress={() => router.back()} style={styles.signupLink}>Sign In </Text>
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -90,6 +117,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.light.background,
+    paddingVertical: 40
   },
   logoContainer: {
     alignItems: 'center',
