@@ -1,10 +1,13 @@
-import { Button, StyleSheet } from 'react-native';
+import { Button, ImageBackground, StyleSheet } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { Redirect, useRouter } from 'expo-router';
 import { removeToken } from './utils/secureStore';
 import { POST } from './hooks/useFetchData';
 import { useAuth } from '@/components/auth/AuthProvider';
 import LoadingScreen from '@/components/LoadingScreen';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import SubLayout, { ELayoutType } from '@/components/SubLayout';
+import ActionButton from '@/components/ActionButton';
 
 export default function Index() {
   const router = useRouter();
@@ -35,28 +38,60 @@ export default function Index() {
   if (!authState?.authenticated) {
     return <Redirect href="/(auth)/login" />;
   }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>this is home screen</Text>
-      <Button title='Logout' onPress={logout} />
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-    </View>
+    <SubLayout image={ELayoutType.WELCOME}>
+      <View style={styles.container}>
+        {/* Replace with your actual logo */}
+        <View style={styles.logoPlaceholder}>
+          <Text style={styles.logoText}>LOGO</Text>
+        </View>
+        <Text style={styles.mainTitle}>Habit Force</Text>
+        <Text style={styles.subTitle}>Build better habit, one day a time!</Text>
+        <ActionButton 
+          title="Let's go"
+          onPress={() => {}}
+
+        />
+      </View>
+    </SubLayout>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'transparent'
   },
-  title: {
+  buttonLetgo: {
+    backgroundColor: 'red',
+    padding: 10
+  },
+  logoPlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#3498db',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoText: {
+    color: 'white',
     fontSize: 20,
     fontWeight: 'bold',
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  mainTitle: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    marginTop: 20,
+    color: '#333',
+  },
+  subTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 20,
+    textAlign: "center",
+    color: '#333',
   },
 });

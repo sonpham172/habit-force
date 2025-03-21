@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "habit-force-fe",
-    "slug": "habit-force-fe",
+    "name": "habit-force",
+    "slug": "habit-force",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
