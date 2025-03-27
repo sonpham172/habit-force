@@ -9,8 +9,6 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/components/useColorScheme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/components/auth/AuthProvider';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -52,27 +50,16 @@ export default function RootLayout() {
   );
 }
 
-const Tab = createBottomTabNavigator();
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{
-          headerShown: false
-        }}/>
-        <Stack.Screen name="welcome/index" options={{
-          title: "Welcome",
-          headerShown: false
-        }} />
-        <Stack.Screen name="(auth)/login" options={{
-          title: "Login"
-        }} />
-        <Stack.Screen name="(auth)/register" options={{
-          title: "Register"
-        }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="welcome/index" />
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(tabs)" />
       </Stack>
     </ThemeProvider>
   );

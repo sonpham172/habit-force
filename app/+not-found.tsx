@@ -2,10 +2,11 @@ import { Link, Stack } from 'expo-router';
 import { StyleSheet } from 'react-native';
 
 import { Text, View } from '@/components/Themed';
+import SubLayout, { ELayoutType } from '@/components/SubLayout';
 
 export default function NotFoundScreen() {
   return (
-    <>
+    <SubLayout image={ELayoutType.WELCOME}>
       <Stack.Screen options={{ title: 'Oops!' }} />
       <View style={styles.container}>
         <Text style={styles.title}>This screen doesn't exist.</Text>
@@ -14,7 +15,7 @@ export default function NotFoundScreen() {
           <Text style={styles.linkText}>Go to home screen!</Text>
         </Link>
       </View>
-    </>
+    </SubLayout>
   );
 }
 

@@ -44,7 +44,7 @@ export default function Index() {
           router.replace('/(auth)/login');
         }
       } else {
-        router.replace('/home');
+        router.replace('/(tabs)/home');
       }
     }
   }, [loading, authState?.authenticated, isFirstTime]);
@@ -55,41 +55,3 @@ export default function Index() {
 
   return null;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent'
-  },
-  buttonLetgo: {
-    backgroundColor: 'red',
-    padding: 10
-  },
-  logoPlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#3498db',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoText: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  mainTitle: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    marginTop: 20,
-    color: '#333',
-  },
-  subTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginTop: 20,
-    textAlign: "center",
-    color: '#333',
-  },
-});
