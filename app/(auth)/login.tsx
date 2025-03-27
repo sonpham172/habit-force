@@ -24,7 +24,7 @@ export default function LoginScreen() {
         if (res.data.access_token) {
           await saveToken(res.data.access_token);
           console.log('Sign-in successful:', res.message);
-          router.replace('/');
+          router.replace('/home');
           setEmail('')
           setPassword('')
         }

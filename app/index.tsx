@@ -1,6 +1,6 @@
 import { Button, ImageBackground, StyleSheet } from 'react-native';
 import { Text, View } from '@/components/Themed';
-import { Redirect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { removeToken } from './utils/secureStore';
 import { POST } from './hooks/useFetchData';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -8,54 +8,52 @@ import LoadingScreen from '@/components/LoadingScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SubLayout, { ELayoutType } from '@/components/SubLayout';
 import ActionButton from '@/components/ActionButton';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
 
 export default function Index() {
   const router = useRouter();
-  const {authState, loading} = useAuth();
+  const { authState, loading } = useAuth();
+  const [isFirstTime, setIsFirstTime] = useState<boolean | null>(null);
 
-  console.log('authState', authState, loading);
-  const logout = async () => {
-    const res = await POST(
-      '/user/logout', 
-      '',
-      {
-        email: 'finn@gmail.com',
-        password: '123456789',
+  useEffect(() => {
+    const checkFirstTimeAccess = async () => {
+      try {
+        const hasVisited = await AsyncStorage.getItem('hasVisited');
+        if (!hasVisited) {
+          await AsyncStorage.setItem('hasVisited', 'true');
+          setIsFirstTime(true);
+        } else {
+          setIsFirstTime(false);
+        }
+      } catch (error) {
+        console.error('Error checking first time access:', error);
+        setIsFirstTime(false);
       }
-    );
+    };
 
-    console.log('Response:', res);
-    if(!res.errors) {
-      await removeToken();
-      router.replace('/(auth)/login');
+    checkFirstTimeAccess();
+  }, []);
+
+  useEffect(() => {
+    if (!loading && isFirstTime !== null) {
+      if (!authState?.authenticated) {
+        if (isFirstTime) {
+          router.replace('/welcome');
+        } else {
+          router.replace('/(auth)/login');
+        }
+      } else {
+        router.replace('/home');
+      }
     }
-  }
+  }, [loading, authState?.authenticated, isFirstTime]);
 
-  if(loading) {
+  if (loading || isFirstTime === null) {
     return <LoadingScreen message="Checking authentication..." />;
   }
 
-  if (!authState?.authenticated) {
-    return <Redirect href="/(auth)/login" />;
-  }
-
-  return (
-    <SubLayout image={ELayoutType.WELCOME}>
-      <View style={styles.container}>
-        {/* Replace with your actual logo */}
-        <View style={styles.logoPlaceholder}>
-          <Text style={styles.logoText}>LOGO</Text>
-        </View>
-        <Text style={styles.mainTitle}>Habit Force</Text>
-        <Text style={styles.subTitle}>Build better habit, one day a time!</Text>
-        <ActionButton 
-          title="Let's go"
-          onPress={() => {}}
-
-        />
-      </View>
-    </SubLayout>
-  );
+  return null;
 }
 
 const styles = StyleSheet.create({

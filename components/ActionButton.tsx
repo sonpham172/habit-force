@@ -42,6 +42,7 @@ export default function ActionButton({
     <TouchableOpacity
       style={[
         {
+          width: '100%',
           alignItems: 'center',
           justifyContent: 'center',
           paddingHorizontal,
