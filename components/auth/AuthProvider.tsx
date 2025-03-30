@@ -1,4 +1,5 @@
 import { POST } from '@/app/hooks/useFetchData';
+import { ApiErrorResponse, ApiResponse, LoginResponse, RegisterResponse } from '@/app/types/api';
 import { getToken, removeToken, saveToken } from '@/app/utils/secureStore';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
@@ -6,9 +7,9 @@ interface AuthProps {
   authState?: {token: string | null, authenticated: boolean | null},
   loading?: boolean | null,
   onRegister?: ({name, email, password, confirmPassword}: 
-    {name: string, email: string, password: string, confirmPassword: string}) => Promise<any>;
-  onLogin?: (email: string, password: string) => Promise<any>;
-  onLogut?: () => Promise<any>
+    {name: string, email: string, password: string, confirmPassword: string}) => Promise<ApiResponse<RegisterResponse>>;
+  onLogin?: (email: string, password: string) => Promise<ApiResponse<LoginResponse>>;
+  onLogut?: () => {}
 }
 
 const AuthContext = createContext<AuthProps>({});
@@ -39,47 +40,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [])
 
   const login = async (email: string, password: string) => {
-    try {
-      const res = await POST(
-        '/user/sign-in', 
-        '', // Token (if applicable)
-        {
-          email: email,
-          password: password,
-        }
-      );
-      if(res.status && res.data.access_token) {
-        setAuthState({
-          token: res.data.access_token,
-          authenticated: true
-        })
-        await saveToken(res.data.access_token);
+    const res = await POST<LoginResponse>(
+      '/user/sign-in', 
+      '', // Token (if applicable)
+      {
+        email: email,
+        password: password,
       }
-      return res;
-    } catch (error) {
-      console.error('Error in handleSignIn:', error);
+    );
+    if(res.status && res.data.access_token) {
+      setAuthState({
+        token: res.data.access_token,
+        authenticated: true
+      })
+      await saveToken(res.data.access_token);
     }
+    return res;
   }
 
   const register = async ({name, email, password, confirmPassword}: 
     {name: string, email: string, password: string, confirmPassword: string}) => {
-    try {
-      const res = await POST(
-        '/user/sign-up', 
-        '',
-        {
-          "name": name,
-          "email": email,
-          "password": password,
-          "confirmPassword": confirmPassword,
-          "phone": "234343434"
-        }
-      );
-      
-      return res;
-    } catch (error) {
-      console.error('Error in handleSignUp:', error);
-    }
+    const res = await POST<RegisterResponse>(
+      '/user/sign-up', 
+      '',
+      {
+        "name": name,
+        "email": email,
+        "password": password,
+        "confirmPassword": confirmPassword,
+        "phone": "234343434"
+      }
+    );
+    
+    return res;
   }
 
   const logout = async () => {

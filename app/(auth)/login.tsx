@@ -7,6 +7,7 @@ import Colors from '@/constants/Colors';
 import { POST } from '@/app/hooks/useFetchData';
 import { saveToken } from '@/app/utils/secureStore';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { LoginResponse } from '@/app/types/api';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -20,23 +21,24 @@ export default function LoginScreen() {
     try {
       setIsLoading(true);
       const res = await onLogin!(email, password);
-      if(res.status) {
-        if (res.data.access_token) {
-          await saveToken(res.data.access_token);
+      if(res.status && res.data) {
+        const loginData: LoginResponse = res.data;
+        if (loginData.access_token) {
+          await saveToken(loginData.access_token);
           console.log('Sign-in successful:', res.message);
-          router.replace('/home');
-          setEmail('')
-          setPassword('')
+          router.replace('/(tabs)/home');
+          setEmail('');
+          setPassword('');
         }
       } else {
-        alert(res.message)
+        alert(res.message);
       }
     } catch (error) {
-      alert(error)
+      alert(error instanceof Error ? error.message : 'An error occurred');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
       <KeyboardAvoidingView
