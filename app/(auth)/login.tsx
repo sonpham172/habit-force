@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '@/constants/Colors';
-import { POST } from '@/app/hooks/useFetchData';
 import { saveToken } from '@/app/utils/secureStore';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { LoginResponse } from '@/app/types/api';

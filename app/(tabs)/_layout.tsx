@@ -1,22 +1,28 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import Colors from '@/constants/Colors';
+import { useColorScheme } from 'react-native';
 
 export default function TabLayout() {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#3498db',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.gray,
         tabBarStyle: {
-          backgroundColor: 'white',
+          backgroundColor: colors.white,
           borderTopWidth: 1,
-          borderTopColor: '#e0e0e0',
+          borderTopColor: colors.lightGray,
         },
         headerStyle: {
-          backgroundColor: 'white',
+          backgroundColor: colors.white,
         },
-        headerTintColor: '#333',
-      }}>
+        headerShadowVisible: false,
+      }}
+    >
       <Tabs.Screen
         name="home"
         options={{
@@ -27,20 +33,29 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="habits"
+        name="progress"
         options={{
-          title: 'Habits',
+          title: 'Progress',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="list" size={size} color={color} />
+            <Ionicons name="stats-chart" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="challenges"
         options={{
-          title: 'Profile',
+          title: 'Challenges',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+            <Ionicons name="trophy" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings" size={size} color={color} />
           ),
         }}
       />

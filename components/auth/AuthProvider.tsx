@@ -1,6 +1,7 @@
-import { POST } from '@/app/hooks/useFetchData';
 import { ApiErrorResponse, ApiResponse, LoginResponse, RegisterResponse } from '@/app/types/api';
+import { POST } from '@/app/utils/api';
 import { getToken, removeToken, saveToken } from '@/app/utils/secureStore';
+import { router } from 'expo-router';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface AuthProps {
@@ -9,7 +10,7 @@ interface AuthProps {
   onRegister?: ({name, email, password, confirmPassword}: 
     {name: string, email: string, password: string, confirmPassword: string}) => Promise<ApiResponse<RegisterResponse>>;
   onLogin?: (email: string, password: string) => Promise<ApiResponse<LoginResponse>>;
-  onLogut?: () => {}
+  onLogout?: () =>void;
 }
 
 const AuthContext = createContext<AuthProps>({});
@@ -42,7 +43,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (email: string, password: string) => {
     const res = await POST<LoginResponse>(
       '/user/sign-in', 
-      '', // Token (if applicable)
       {
         email: email,
         password: password,
@@ -61,8 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const register = async ({name, email, password, confirmPassword}: 
     {name: string, email: string, password: string, confirmPassword: string}) => {
     const res = await POST<RegisterResponse>(
-      '/user/sign-up', 
-      '',
+      '/user/sign-up',
       {
         "name": name,
         "email": email,
@@ -80,7 +79,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setAuthState({
       token: null,
       authenticated: false
-    })
+    });
+    router.replace('/(auth)/login');
   }
 
   const authContext: AuthProps = {
@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     loading,
     onLogin: login,
     onRegister: register,
-    onLogut: logout
+    onLogout: logout
   };
   
   return <AuthContext.Provider value={authContext}>{children}</AuthContext.Provider>;
