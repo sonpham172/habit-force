@@ -5,6 +5,9 @@ import { useColorScheme } from '@/components/useColorScheme';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useProfile } from '../hooks/useProfile';
+import { getToken } from '../utils/secureStore';
+import * as ImagePicker from 'expo-image-picker';
+import { POST, POSTFormData } from '../utils/api';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
@@ -12,24 +15,82 @@ export default function SettingsScreen() {
   const [showFAQ, setShowFAQ] = useState(false);
   const {onLogout} = useAuth();
   const userQuery = useProfile();
+  const [token, setToken] = useState<string | null>(null);
   const user = userQuery.data;
   const version = '1.0.0';
+
+  useEffect(() => {
+    const getInitials = async () => {
+      const token = await getToken();
+      setToken(token);
+    }
+    getInitials();
+  }, []);
+
+  const handleAvatarPress = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (!permissionResult.granted) {
+        alert('Permission to access camera roll is required!');
+        return;
+      }
+
+      const pickerResult = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+
+      if (!pickerResult.canceled) {
+        const formData = new FormData();
+        const imageFile = {
+          uri: pickerResult.assets[0].uri,
+          type: 'image/jpeg',
+          name: 'avatar.jpg',
+        } as unknown as Blob;
+        
+        formData.append('avatar', imageFile);
+
+        const response = await POSTFormData('/user/avatar', formData);
+        if (response.status) {
+          userQuery.refetch();
+        } else {
+          alert('Failed to upload avatar');
+        }
+      }
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      alert('Error uploading avatar');
+    }
+  };
 
   // Generate random avatar color
   const avatarColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD', '#D4A5A5'];
   const randomColor = avatarColors[Math.floor(Math.random() * avatarColors.length)];
-  const initials = 'F'; // Get from user name
+  const avatar = 'F'; // Get from user name
 
   return (
     <View style={styles.container}>
 
       <View style={styles.profileSection}>
-        <View style={[styles.avatar, { backgroundColor: randomColor }]}>
-          <Text style={styles.avatarText}>{initials}</Text>
-        </View>
+        <TouchableOpacity onPress={handleAvatarPress}>
+          {user?.avatar.startsWith('http') ? (
+            <Image 
+              source={{ uri: user.avatar }}
+              style={styles.avatar}
+            />
+          ) : (
+            <View style={[styles.avatar, { backgroundColor: randomColor }]}>
+              <Text style={styles.avatarText}>{avatar}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
         <View style={styles.userInfo}>
           <Text style={styles.name}>{user?.username}</Text>
           <Text style={styles.email}>{user?.email}</Text>
+          <Text style={styles.email}>Phone: {user?.phone}</Text>
         </View>
       </View>
 
@@ -185,4 +246,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-}); 
+});

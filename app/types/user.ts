@@ -4,4 +4,5 @@ export interface UserProfile {
   avatar: string;
   createdAt: string;
   updatedAt: string;
+  phone: string;
 } 

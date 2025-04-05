@@ -22,11 +22,13 @@ export const fetchData = async <T extends unknown>(
   url: string,
   method: string,
   payload?: unknown,
+  requestToken: boolean = false,
+  isFormData: boolean = false
 ): Promise<ApiResponse<T>> => {
   try {
-    const token = await checkAuth();
+    const token = requestToken ? await checkAuth() : null;
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
     };
     if (token) {
       headers['token'] = `Bearer ${token}`;
@@ -68,9 +70,13 @@ export const GET = async <T extends unknown>(url: string): Promise<ApiResponse<T
 };
 
 export const GETAuth = async <T extends unknown>(url: string): Promise<ApiResponse<T>> => {
-  return await fetchData<T>(url, 'GET', null); 
+  return await fetchData<T>(url, 'GET', null, true); 
 };
 
 export const POST = async <T extends unknown>(url: string, payload: unknown): Promise<ApiResponse<T>> => {
   return await fetchData<T>(url, 'POST', payload);
+};
+
+export const POSTFormData = async <T extends unknown>(url: string, payload: unknown): Promise<ApiResponse<T>> => {
+  return await fetchData<T>(url, 'POST', payload, false, true);
 };
