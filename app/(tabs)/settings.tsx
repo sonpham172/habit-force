@@ -47,11 +47,11 @@ export default function SettingsScreen() {
         const formData = new FormData();
         const imageFile = {
           uri: pickerResult.assets[0].uri,
-          type: 'image/jpeg',
-          name: 'avatar.jpg',
+          type: 'image/*',
+          name: 'avatar.png',
         } as unknown as Blob;
         
-        formData.append('avatar', imageFile);
+        formData.append('file', imageFile);
 
         const response = await POSTFormData('/user/avatar', formData);
         if (response.status) {

@@ -26,10 +26,12 @@ export const fetchData = async <T extends unknown>(
   isFormData: boolean = false
 ): Promise<ApiResponse<T>> => {
   try {
+    const headers: Record<string, string> = {};
     const token = requestToken ? await checkAuth() : null;
-    const headers: Record<string, string> = {
-      'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
-    };
+    if(!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
+
     if (token) {
       headers['token'] = `Bearer ${token}`;
     }
@@ -40,12 +42,10 @@ export const fetchData = async <T extends unknown>(
       headers,
     };
     if(method) options['method'] = method.toUpperCase();
-    if(payload) options['body'] = JSON.stringify(payload);
+    if(payload) options['body'] = isFormData ? payload as BodyInit : JSON.stringify(payload);
     const response = await fetch(`${config.apiUrl}${url}`, options);
 
     const responsePayload = await response.json();
-    console.log('responsePayload', responsePayload);
-    
     const message: string = responsePayload['message'];
     const data = responsePayload['data'];
     const status: boolean = responsePayload['status'];
@@ -78,5 +78,5 @@ export const POST = async <T extends unknown>(url: string, payload: unknown): Pr
 };
 
 export const POSTFormData = async <T extends unknown>(url: string, payload: unknown): Promise<ApiResponse<T>> => {
-  return await fetchData<T>(url, 'POST', payload, false, true);
+  return await fetchData<T>(url, 'POST', payload, true, true);
 };
