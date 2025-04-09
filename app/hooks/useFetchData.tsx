@@ -19,10 +19,12 @@ export const useFetch = <T extends unknown>(queryKey: string[], url: string) => 
 export const useFetchAuth = <T extends unknown>(
   queryKey: string[], 
   url: string,
+  enabled: boolean = true
 ) => {
   const query = useQuery<ApiResponse<T>>({
     queryKey: queryKey, 
-    queryFn: () => GETAuth<T>(url)
+    queryFn: () => GETAuth<T>(url),
+    enabled: enabled
   });
 
   return {
