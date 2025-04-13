@@ -39,17 +39,17 @@ export default function HabitItem({ habit, onToggle }: HabitItemProps) {
           </View>
         </View>
       </View>
-      {/* <TouchableOpacity 
+      <TouchableOpacity 
         style={[
           styles.checkbox,
-          habit.isCompleted && { backgroundColor: colors.primary }
+          true && { backgroundColor: colors.primary }
         ]}
-        onPress={() => onToggle(habit.id)}
+        onPress={() => onToggle(habit._id)}
       >
-        {habit.isCompleted && (
+        {true && (
           <Ionicons name="checkmark" size={20} color={colors.white} />
         )}
-      </TouchableOpacity> */}
+      </TouchableOpacity>
     </View>
   );
 }

@@ -1,25 +1,27 @@
-import { StyleSheet, ScrollView } from 'react-native';
-import { Text, View } from '@/components/Themed';
-import SubLayout, { ELayoutType } from '@/components/SubLayout';
-import { getGreeting } from '@/app/utils/time';
+import { StyleSheet, View, ScrollView } from 'react-native';
+import { Text } from '@/components/Themed';
+import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
+import { getGreeting } from '@/app/utils/time';
 import Colors from '@/constants/Colors';
-import { useColorScheme } from 'react-native';
 import React from 'react';
 import { useProfile } from '../hooks/useProfile';
+import SubLayout, { ELayoutType } from '@/components/SubLayout';
 import { useHabits } from '../hooks/useHabits';
 import HabitItem from '../components/HabitItem';
 
 export default function HomeScreen() {
+  const greeting = getGreeting();
+  const currentTime = new Date().toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
   const { data: user, isLoading: isLoadingProfile } = useProfile();
   console.log('userss', user?._id);
   
   const { data: habits, isLoading: isLoadingHabits } = useHabits({userId: user?._id ?? ''});
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
-  const greeting = getGreeting();
-  console.log('habits', habits);
-  
+
 
   const handleToggleHabit = (habitId: string) => {
     // TODO: Implement habit toggle
@@ -30,23 +32,38 @@ export default function HomeScreen() {
     <SubLayout image={ELayoutType.WELCOME}>
       <ScrollView style={styles.container}>
         <View style={styles.header}>
-          {isLoadingProfile ? (
-            <Text style={styles.greeting}>Loading...</Text>
-          ) : (
-            <>
-              <Text style={styles.greeting}>
-                {greeting}, {user?.username}!
-              </Text>
-              <View style={styles.streakContainer}>
-                <Ionicons name="flame" size={24} color={colors.primary} />
-                <Text style={styles.streakText}>3 Day Streak</Text>
-              </View>
-            </>
-          )}
+          <BlurView intensity={60} tint="light" style={styles.greetingCard}>
+            <Ionicons name="sunny" size={40} color="#FFD700" style={styles.weatherIcon} />
+            <View style={styles.greetingContent}>
+              <Text style={styles.greeting}>{greeting}</Text>
+              <Text style={styles.username}>{user?.username}</Text>
+            </View>
+            <Text style={styles.time}>{currentTime}</Text>
+          </BlurView>
+
+          <BlurView intensity={60} tint="light" style={styles.streakCard}>
+            <View style={styles.streakContent}>
+              <Ionicons name="water" size={24} color="#4FC3F7" />
+              <Text style={styles.streakText}>Streak: 5 Days!</Text>
+            </View>
+          </BlurView>
+
+          <BlurView intensity={60} tint="light" style={styles.progressCard}>
+            <Text style={styles.progressTitle}>Your Progress</Text>
+            <Text style={styles.progressDays}>5 Days!</Text>
+          </BlurView>
         </View>
 
-        <View style={styles.habitsSection}>
-          <Text style={styles.sectionTitle}>Today's Habits</Text>
+        {/* <View style={styles.menuSection}>
+          <MenuCard icon="bar-chart" title="View Progress" count={20} />
+          <MenuCard icon="stats-chart" title="View Progress" count={20} />
+          <MenuCard icon="trophy" title="Challenges" count={20} />
+          <MenuCard icon="flag" title="Challenges" count={30} />
+          <MenuCard icon="settings" title="Settings" count={33} />
+        </View> */}
+
+        <View style={styles.menuSection}>
+          <Text style={styles.sectionTitle  }>Today's Habits</Text>
           {isLoadingHabits ? (
             <Text style={styles.loadingText}>Loading habits...</Text>
           ) : habits?.length === 0 ? (
@@ -68,50 +85,119 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
+    width: '100%',
     backgroundColor: 'transparent',
   },
   header: {
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: 'transparent',
+    paddingHorizontal: 20,
   },
-  greeting: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  streakContainer: {
+  greetingCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'transparent',
-    padding: 10,
+    padding: 20,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: Colors.light.primary,
+    marginBottom: 15,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  },
+  greetingContent: {
+    flex: 1,
+    marginLeft: 15,
+  },
+  greeting: {
+    fontSize: 16,
+    color: Colors.light.gray,
+  },
+  username: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: Colors.light.text,
+  },
+  time: {
+    fontSize: 16,
+    color: Colors.light.gray,
+  },
+  weatherIcon: {
+    marginRight: 10,
+  },
+  streakCard: {
+    padding: 15,
+    borderRadius: 20,
+    marginBottom: 15,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  },
+  streakContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   streakText: {
-    fontSize: 18,
+    marginLeft: 10,
+    fontSize: 16,
     fontWeight: '600',
-    marginLeft: 8,
+    color: Colors.light.text,
   },
-  habitsSection: {
-    padding: 20,
-    backgroundColor: 'transparent',
+  progressCard: {
+    padding: 15,
+    borderRadius: 20,
+    marginBottom: 15,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
   },
-  sectionTitle: {
+  progressTitle: {
+    fontSize: 16,
+    color: Colors.light.gray,
+    marginBottom: 5,
+  },
+  progressDays: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
+    color: Colors.light.text,
+  },
+  menuSection: {
+    padding: 20,
+  },
+  menuCard: {
+    padding: 15,
+    borderRadius: 15,
+    marginBottom: 10,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  },
+  menuContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  menuLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  menuTitle: {
+    marginLeft: 10,
+    fontSize: 16,
+    color: Colors.light.text,
+  },
+  menuRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  menuCount: {
+    marginRight: 5,
+    fontSize: 16,
+    color: Colors.light.gray,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    color: Colors.light.text,
+    marginBottom: 10,
   },
   loadingText: {
-    textAlign: 'center',
+    fontSize: 16,
     color: Colors.light.gray,
-    marginTop: 20,
   },
   emptyText: {
-    textAlign: 'center',
+    fontSize: 16,
     color: Colors.light.gray,
-    marginTop: 20,
   },
 }); 
