@@ -9,8 +9,11 @@ import { useProfile } from '../hooks/useProfile';
 import SubLayout, { ELayoutType } from '@/components/SubLayout';
 import { useHabits } from '../hooks/useHabits';
 import HabitItem from '../components/HabitItem';
+import { Habit } from '../types/habit';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
+  const router = useRouter();
   const greeting = getGreeting();
   const currentTime = new Date().toLocaleTimeString('en-US', {
     hour: 'numeric',
@@ -18,14 +21,18 @@ export default function HomeScreen() {
     hour12: true
   });
   const { data: user, isLoading: isLoadingProfile } = useProfile();
-  console.log('userss', user?._id);
-  
   const { data: habits, isLoading: isLoadingHabits } = useHabits({userId: user?._id ?? ''});
-
 
   const handleToggleHabit = (habitId: string) => {
     // TODO: Implement habit toggle
     console.log('Toggle habit:', habitId);
+  };
+
+  const handleHabitPress = (habit: Habit) => {
+    router.push({
+      pathname: '/habits/[id]',
+      params: { id: habit._id }
+    });
   };
 
   return (
@@ -63,7 +70,7 @@ export default function HomeScreen() {
         </View> */}
 
         <View style={styles.menuSection}>
-          <Text style={styles.sectionTitle  }>Today's Habits</Text>
+          <Text style={styles.sectionTitle}>Today's Habits</Text>
           {isLoadingHabits ? (
             <Text style={styles.loadingText}>Loading habits...</Text>
           ) : habits?.length === 0 ? (
@@ -74,6 +81,7 @@ export default function HomeScreen() {
                 key={habit._id}
                 habit={habit}
                 onToggle={handleToggleHabit}
+                onPress={handleHabitPress}
               />
             ))
           )}
@@ -199,5 +207,23 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     color: Colors.light.gray,
+  },
+  habitDetailCard: {
+    padding: 15,
+    borderRadius: 15,
+    marginTop: 15,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  },
+  habitDetailTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.light.text,
+    marginBottom: 10,
+  },
+  habitDetailText: {
+    fontSize: 14,
+    color: Colors.light.text,
+    marginBottom: 5,
   },
 }); 

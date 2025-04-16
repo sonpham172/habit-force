@@ -10,19 +10,20 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        tabBarStyle: {
+          backgroundColor: '#fff',
+          borderTopWidth: 1,
+          borderTopColor: '#f0f0f0',
+        },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.gray,
-        tabBarStyle: {
-          backgroundColor: colors.white,
-          borderTopWidth: 1,
-          borderTopColor: colors.lightGray,
-        },
         headerStyle: {
-          backgroundColor: colors.white,
+          backgroundColor: '#fff',
         },
-        headerShadowVisible: false,
-      }}
-    >
+        headerTitleStyle: {
+          color: colors.text,
+        },
+      }}>
       <Tabs.Screen
         name="home"
         options={{
@@ -37,14 +38,14 @@ export default function TabLayout() {
         options={{
           title: 'Progress',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="stats-chart" size={size} color={color} />
+            <Ionicons name="bar-chart" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="challenges"
+        name="challenge"
         options={{
-          title: 'Challenges',
+          title: 'Challenge',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="trophy" size={size} color={color} />
           ),

@@ -8,14 +8,19 @@ import { Habit } from '@/app/types/habit';
 interface HabitItemProps {
   habit: Habit;
   onToggle: (habitId: string) => void;
+  onPress?: (habit: Habit) => void;
 }
 
-export default function HabitItem({ habit, onToggle }: HabitItemProps) {
+export default function HabitItem({ habit, onToggle, onPress }: HabitItemProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity 
+      style={styles.container}
+      onPress={() => onPress?.(habit)}
+      activeOpacity={0.7}
+    >
       <View style={styles.habitInfo}>
         <Text style={styles.name}>{habit.name}</Text>
         <View style={styles.details}>
@@ -44,13 +49,16 @@ export default function HabitItem({ habit, onToggle }: HabitItemProps) {
           styles.checkbox,
           true && { backgroundColor: colors.primary }
         ]}
-        onPress={() => onToggle(habit._id)}
+        onPress={(e) => {
+          e.stopPropagation();
+          onToggle(habit._id);
+        }}
       >
         {true && (
           <Ionicons name="checkmark" size={20} color={colors.white} />
         )}
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 }
 const { width } = Dimensions.get('window');
