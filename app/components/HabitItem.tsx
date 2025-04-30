@@ -15,6 +15,10 @@ export default function HabitItem({ habit, onToggle, onPress }: HabitItemProps) 
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
+  // Check if today's date is in completedDates
+  const today = new Date().toISOString().split('T')[0];
+  const isCompletedToday = habit.completedDates?.includes(today);
+
   return (
     <TouchableOpacity 
       style={styles.container}
@@ -39,7 +43,7 @@ export default function HabitItem({ habit, onToggle, onPress }: HabitItemProps) 
           <View style={styles.detailItem}>
             <Ionicons name="stats-chart" size={16} color={colors.gray} />
             <Text style={styles.detailText}>
-              2/7
+              {habit.completedDates?.length || 0}/{habit.targetDays}
             </Text>
           </View>
         </View>
@@ -47,14 +51,14 @@ export default function HabitItem({ habit, onToggle, onPress }: HabitItemProps) 
       <TouchableOpacity 
         style={[
           styles.checkbox,
-          true && { backgroundColor: colors.primary }
+          isCompletedToday && { backgroundColor: colors.primary }
         ]}
         onPress={(e) => {
           e.stopPropagation();
           onToggle(habit._id);
         }}
       >
-        {true && (
+        {isCompletedToday && (
           <Ionicons name="checkmark" size={20} color={colors.white} />
         )}
       </TouchableOpacity>

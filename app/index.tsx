@@ -2,7 +2,6 @@ import { Button, ImageBackground, StyleSheet } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useRouter } from 'expo-router';
 import { removeToken } from './utils/secureStore';
-import { POST } from './hooks/useFetchData';
 import { useAuth } from '@/components/auth/AuthProvider';
 import LoadingScreen from '@/components/LoadingScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -41,7 +40,7 @@ export default function Index() {
         if (isFirstTime) {
           router.replace('/welcome');
         } else {
-          router.replace('/(auth)/login');
+          router.replace('/welcome');
         }
       } else {
         router.replace('/(tabs)/home');
