@@ -4,12 +4,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export enum ELayoutType {
   WELCOME,
-  LOGO
+  LOGO,
+  HOME
 }
 
 const images = {
   [ELayoutType.WELCOME]: require("../assets/images/welcome-bg.png"),
   [ELayoutType.LOGO]: require("../assets/images/icon.png"),
+  [ELayoutType.HOME]: require("../assets/images/welcome-bg.png"), // Using the same background for now
 };
 
 interface ISubLayout {

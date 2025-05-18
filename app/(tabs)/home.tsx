@@ -23,11 +23,6 @@ export default function HomeScreen() {
   const { data: user, isLoading: isLoadingProfile } = useProfile();
   const { data: habits, isLoading: isLoadingHabits } = useHabits({userId: user?._id ?? ''});
 
-  const handleToggleHabit = (habitId: string) => {
-    // TODO: Implement habit toggle
-    console.log('Toggle habit:', habitId);
-  };
-
   const handleHabitPress = (habit: Habit) => {
     router.push({
       pathname: '/habits/[id]',
@@ -36,7 +31,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <SubLayout image={ELayoutType.WELCOME}>
+    <SubLayout image={ELayoutType.HOME}>
       <ScrollView style={styles.container}>
         <View style={styles.header}>
           <BlurView intensity={60} tint="light" style={styles.greetingCard}>
@@ -80,7 +75,6 @@ export default function HomeScreen() {
               <HabitItem
                 key={habit._id}
                 habit={habit}
-                onToggle={handleToggleHabit}
                 onPress={handleHabitPress}
               />
             ))

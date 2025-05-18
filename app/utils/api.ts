@@ -80,3 +80,7 @@ export const POST = async <T extends unknown>(url: string, payload: unknown): Pr
 export const POSTFormData = async <T extends unknown>(url: string, payload: unknown): Promise<ApiResponse<T>> => {
   return await fetchData<T>(url, 'POST', payload, true, true);
 };
+
+export const POSTAuth = async <T extends unknown>(url: string, payload: unknown): Promise<ApiResponse<T>> => {
+  return await fetchData<T>(url, 'POST', payload, true);
+};

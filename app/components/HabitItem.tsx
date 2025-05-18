@@ -4,20 +4,28 @@ import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
 import { Habit } from '@/app/types/habit';
+import { useHabitCompletion } from '@/app/hooks/useHabitCompletion';
 
 interface HabitItemProps {
   habit: Habit;
-  onToggle: (habitId: string) => void;
   onPress?: (habit: Habit) => void;
 }
 
-export default function HabitItem({ habit, onToggle, onPress }: HabitItemProps) {
+export default function HabitItem({ habit, onPress }: HabitItemProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const { completeHabit, isLoading } = useHabitCompletion();
 
   // Check if today's date is in completedDates
   const today = new Date().toISOString().split('T')[0];
   const isCompletedToday = habit.completedDates?.includes(today);
+
+  const handleToggle = (e: any) => {
+    e.stopPropagation();
+    if (!isCompletedToday) {
+      completeHabit(habit._id);
+    }
+  };
 
   return (
     <TouchableOpacity 
@@ -53,10 +61,8 @@ export default function HabitItem({ habit, onToggle, onPress }: HabitItemProps) 
           styles.checkbox,
           isCompletedToday && { backgroundColor: colors.primary }
         ]}
-        onPress={(e) => {
-          e.stopPropagation();
-          onToggle(habit._id);
-        }}
+        onPress={handleToggle}
+        disabled={isLoading || isCompletedToday}
       >
         {isCompletedToday && (
           <Ionicons name="checkmark" size={20} color={colors.white} />
